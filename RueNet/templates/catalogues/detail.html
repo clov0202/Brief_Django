@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ lieu.nom }}{% endblock %}
+
+{% block content %}
+<a href="{% url 'catalogue:liste' %}" class="text-blue-600">← Retour au catalogue</a>
+
+<h1 class="text-2xl font-bold mt-4">{{ lieu.nom }}</h1>
+<dl class="mt-4 space-y-2">
+  <div><dt class="font-semibold inline">Catégorie :</dt> <dd class="inline">{{ lieu.categorie.nom }}</dd></div>
+  <div><dt class="font-semibold inline">Quartier :</dt> <dd class="inline">{{ lieu.quartier }}</dd></div>
+  <div><dt class="font-semibold inline">Adresse :</dt> <dd class="inline">{{ lieu.adresse }}</dd></div>
+  <div><dt class="font-semibold inline">Coordonnées :</dt> <dd class="inline">{{ lieu.latitude }}, {{ lieu.longitude }}</dd></div>
+</dl>
+
+{% if user.is_authenticated %}
+  {# Bouton « Faire un signalement » à ajouter quand /catalogue/<id>/demande/ existera #}
+{% endif %}
+{% endblock %}
