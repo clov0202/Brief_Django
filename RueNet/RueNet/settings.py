@@ -91,18 +91,6 @@ DATABASES = {
     }
 }
 
-## Si autre que sqlite
-#
-# DATABASE = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRESQL_DATABASE'),
-#         'USER': os.getenv('POSTGRESQL_USER'),
-#         'PASSWORD': os.getenv('POSTGRESQL_PASSWORD'),
-#         'HOST': os.getenv('POSTGRESQL_HOST'),
-#         'PORT': os.getenv('POSTGRESQL_PORT'),
-#     }
-# }
 
 
 
