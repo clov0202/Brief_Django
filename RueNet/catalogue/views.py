@@ -4,34 +4,36 @@ from django.views.generic import ListView, DetailView
 from .models import Categorie, Lieu
 
 
-class CatalogueView(ListView):
+class CatalogueVue(ListView):
     model = Lieu
     template_name = "catalogue/liste.html"
     context_object_name = "lieux"
 
     def get_queryset(self):
-        qs = Lieu.objects.select_related("categorie")
-        q = self.request.GET.get("q", "").strip()
+        lieux = Lieu.objects.select_related("categorie")
+        mot_cle = self.request.GET.get("mot_cle", "").strip()
         categorie = self.request.GET.get("categorie", "")
 
-        if q:
+        if mot_cle:
             # Recherche par mot-clé sur le nom, l'adresse et le quartier
-            qs = qs.filter(
-                Q(nom__icontains=q) | Q(adresse__icontains=q) | Q(quartier__icontains=q)
+            lieux = lieux.filter(
+                Q(nom__icontains=mot_cle)
+                | Q(adresse__icontains=mot_cle)
+                | Q(quartier__icontains=mot_cle)
             )
         if categorie.isdigit():  # on ignore une valeur forgée non numérique
-            qs = qs.filter(categorie_id=int(categorie))
-        return qs
+            lieux = lieux.filter(categorie_id=int(categorie))
+        return lieux
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["categories"] = Categorie.objects.all()
-        ctx["q"] = self.request.GET.get("q", "")
-        ctx["categorie_choisie"] = self.request.GET.get("categorie", "")
-        return ctx
+        contexte = super().get_context_data(**kwargs)
+        contexte["categories"] = Categorie.objects.all()
+        contexte["mot_cle"] = self.request.GET.get("mot_cle", "")
+        contexte["categorie_choisie"] = self.request.GET.get("categorie", "")
+        return contexte
 
 
-class LieuDetailView(DetailView):
+class DetailLieuVue(DetailView):
     model = Lieu
     template_name = "catalogue/detail.html"
     context_object_name = "lieu"

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 ]
 
 # Modèle utilisateur personnalisé (rôle + quartier)
-AUTH_USER_MODEL = 'signalement.User'
+AUTH_USER_MODEL = 'signalement.Utilisateur'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

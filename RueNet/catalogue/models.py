@@ -6,6 +6,8 @@ class Categorie(models.Model):
 
     class Meta:
         ordering = ["nom"]
+        verbose_name = "catégorie"
+        verbose_name_plural = "catégories"
 
     def __str__(self):
         return self.nom
@@ -21,6 +23,8 @@ class Lieu(models.Model):
 
     class Meta:
         ordering = ["nom"]
+        verbose_name = "lieu"
+        verbose_name_plural = "lieux"
 
     def __str__(self):
         return self.nom

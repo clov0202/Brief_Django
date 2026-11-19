@@ -4,10 +4,14 @@ from django.db import models
 from django.utils import timezone
 
 
-class User(AbstractUser):
+class Utilisateur(AbstractUser):
     ROLES = [("utilisateur", "Utilisateur"), ("gestionnaire", "Gestionnaire")]
     role = models.CharField(max_length=20, choices=ROLES, default="utilisateur")
     quartier = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "utilisateur"
+        verbose_name_plural = "utilisateurs"
 
 
 class Signalement(models.Model):
@@ -46,6 +50,8 @@ class Signalement(models.Model):
 
     class Meta:
         ordering = ["-date_creation"]
+        verbose_name = "signalement"
+        verbose_name_plural = "signalements"
 
     def __str__(self):
-        return f"Signalement #{self.pk} - {self.lieu} ({self.get_etat_display()})"
+        return f"Signalement n°{self.pk} - {self.lieu} ({self.get_etat_display()})"
