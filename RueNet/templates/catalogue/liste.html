@@ -16,13 +16,13 @@
     {% endfor %}
   </select>
   <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Rechercher</button>
-  <a href="{% url 'signalement:liste' %}" class="px-4 py-2 text-gray-600">Réinitialiser</a>
+  <a href="{% url 'catalogue:liste' %}" class="px-4 py-2 text-gray-600">Réinitialiser</a>
 </form>
 
 {% if lieux %}
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {% for lieu in lieux %}
-      <a href="{% url 'signalement:detail' lieu.pk %}"
+      <a href="{% url 'catalogue:detail' lieu.pk %}"
          class="block border rounded p-4 hover:shadow bg-white">
         <h2 class="font-semibold">{{ lieu.nom }}</h2>
         <p class="text-sm text-gray-600">{{ lieu.categorie.nom }} · {{ lieu.quartier }}</p>

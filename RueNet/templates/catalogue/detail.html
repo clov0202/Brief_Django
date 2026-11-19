@@ -2,7 +2,7 @@
 {% block title %}{{ lieu.nom }}{% endblock %}
 
 {% block content %}
-<a href="{% url 'signalement:liste' %}" class="text-blue-600">← Retour au catalogue</a>
+<a href="{% url 'catalogue:liste' %}" class="text-blue-600">← Retour au catalogue</a>
 
 <h1 class="text-2xl font-bold mt-4">{{ lieu.nom }}</h1>
 <dl class="mt-4 space-y-2">

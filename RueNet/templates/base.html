@@ -11,7 +11,7 @@
   <nav class="bg-white border-b">
     <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-4">
       <a href="/" class="font-bold text-blue-600 text-lg">RueNet</a>
-      <a href="{% url 'signalement:liste' %}" class="hover:underline">Catalogue</a>
+      <a href="{% url 'catalogue:liste' %}" class="hover:underline">Catalogue</a>
 
       <div class="ml-auto flex items-center gap-4">
         {% if user.is_authenticated %}
