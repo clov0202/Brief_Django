@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import Utilisateur, Signalement
 
-admin.site.register(Utilisateur, UserAdmin)
+from .models import Categorie, Lieu, Signalement
+
+admin.site.register(Categorie)
+admin.site.register(Lieu)
 admin.site.register(Signalement)

@@ -1,17 +1,35 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
 
-class Utilisateur(AbstractUser):
-    ROLES = [("utilisateur", "Utilisateur"), ("gestionnaire", "Gestionnaire")]
-    role = models.CharField(max_length=20, choices=ROLES, default="utilisateur")
-    quartier = models.CharField(max_length=100, blank=True)
+class Categorie(models.Model):
+    nom = models.CharField(max_length=100)
 
     class Meta:
-        verbose_name = "utilisateur"
-        verbose_name_plural = "utilisateurs"
+        ordering = ["nom"]
+        verbose_name = "catégorie"
+        verbose_name_plural = "catégories"
+
+    def __str__(self):
+        return self.nom
+
+
+class Lieu(models.Model):
+    nom = models.CharField(max_length=200)
+    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, related_name="lieux")
+    quartier = models.CharField(max_length=100)
+    adresse = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    class Meta:
+        ordering = ["nom"]
+        verbose_name = "lieu"
+        verbose_name_plural = "lieux"
+
+    def __str__(self):
+        return self.nom
 
 
 class Signalement(models.Model):
@@ -39,7 +57,7 @@ class Signalement(models.Model):
     }
 
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="signalements")
-    lieu = models.ForeignKey("catalogue.Lieu", on_delete=models.PROTECT, related_name="signalements")
+    lieu = models.ForeignKey(Lieu, on_delete=models.PROTECT, related_name="signalements")
     etat = models.CharField(max_length=20, choices=ETATS, default=NOUVEAU)
     description = models.TextField()
     motif_rejet = models.TextField(blank=True)

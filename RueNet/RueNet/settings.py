@@ -39,7 +39,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'signalement',
-    'catalogue',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,8 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# Modèle utilisateur personnalisé (rôle + quartier)
-AUTH_USER_MODEL = 'signalement.Utilisateur'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
