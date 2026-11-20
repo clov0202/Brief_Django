@@ -3,9 +3,26 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class Utilisateur(AbstractUser):
+
+    @property
+    def prenom(self):
+        return self.first_name
+    
+    @prenom.setter
+    def prenom(self, valeur):
+        self.first_name = valeur
+
+    @property
+    def nom(self):
+        return self.last_name
+
+    @nom.setter
+    def nom(self, valeur):
+        self.last_name = valeur
+
     class Role(models.TextChoices):
-        UTILISATEUR = "utilisateur", "Habitant"
-        GESTIONNAIRE = "gestionnaire", "Agent de la ville"
+        UTILISATEUR = "utilisateur"#, "Habitant"
+        GESTIONNAIRE = "gestionnaire"#, "Agent de la ville"
 
     role = models.CharField(
         max_length=20,
