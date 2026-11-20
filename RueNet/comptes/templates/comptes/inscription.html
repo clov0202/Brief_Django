@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - RueNet{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-8 bg-white p-6 rounded shadow">
+  <h1 class="text-2xl font-bold mb-4">Inscription</h1>
+
+  <form method="post" novalidate class="space-y-4">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="p-3 bg-red-100 text-red-800 rounded">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    {% for champ in form %}
+      <div>
+        <label for="{{ champ.id_for_label }}" class="block font-medium mb-1">
+          {{ champ.label }}
+        </label>
+        {{ champ }}
+        {% if champ.help_text %}
+          <p class="text-xs text-gray-500 mt-1">{{ champ.help_text }}</p>
+        {% endif %}
+        {% for erreur in champ.errors %}
+          <p class="text-sm text-red-600 mt-1">{{ erreur }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      Créer mon compte
+    </button>
+  </form>
+
+  <p class="mt-4 text-sm text-center">
+    Déjà inscrit ? <a href="{% url 'comptes:connexion' %}" class="text-blue-600 underline">Se connecter</a>
+  </p>
+</div>
+{% endblock %}

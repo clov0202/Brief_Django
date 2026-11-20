@@ -7,4 +7,5 @@ urlpatterns = [
     path("", RedirectView.as_view(pattern_name="signalement:liste"), name="accueil"),
     path("admin/", admin.site.urls),
     path("", include("signalement.urls")),
+    path("comptes/", include("comptes.urls")),
 ]

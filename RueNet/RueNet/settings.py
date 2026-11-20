@@ -38,6 +38,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'comptes',
     'signalement',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -136,3 +137,5 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+AUTH_USER_MODEL = "comptes.Utilisateur"
