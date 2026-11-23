@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Détail Signalement{% endblock %}
+
+{% block content %}
+<a href="{% url 'signalement:gestion:liste' %}" class="text-blue-600">← Retour à la liste des signalements</a>
+
+<h1 class="text-2xl font-bold mt-4">{{ signalement }}</h1>
+
+<form method="post" class="mt-4 space-y-4">
+  {% csrf_token %}
+
+  <!-- Partie lecture seule + champs modifiables fusionnés -->
+  <dl class="space-y-3">
+    <div>
+      <dt class="font-semibold inline">Témoin :</dt>
+      <dd class="inline">{{ signalement.utilisateur.prenom }} {{ signalement.utilisateur.nom }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold inline">Email :</dt>
+      <dd class="inline">{{ signalement.utilisateur.email }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold inline">Lieu :</dt>
+      <dd class="inline">{{ signalement.lieu.name }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold inline">Latitude/Longitude :</dt>
+      <dd class="inline">{{ signalement.lieu.latitude }}° / {{ signalement.lieu.longitude }}°</dd>
+    </div>
+    <div>
+      <dt class="font-semibold inline">Description :</dt>
+      <dd class="inline">{{ signalement.description }}</dd>
+    </div>
+
+    <!-- Champs du formulaire intégrés directement à la suite -->
+    <div class="pt-2">
+      <dt class="font-semibold mb-1"><label for="{{ form.etat.id_for_label }}">État :</label></dt>
+      <dd>
+        {{ form.etat }}
+        {% if form.etat.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.etat.errors }}</p>
+        {% endif %}
+      </dd>
+    </div>
+
+    <div>
+      <dt class="font-semibold mb-1"><label for="{{ form.motif_rejet.id_for_label }}">Motif de rejet :</label></dt>
+      <dd>
+        {{ form.motif_rejet }}
+        {% if form.motif_rejet.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.motif_rejet.errors }}</p>
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+
+  <div class="pt-2">
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded">
+      Mettre à jour
+    </button>
+  </div>
+</form>
+
+
+<hr class="my-6"><!-- ----------------------------- -->
+
+{% if signalement.rattaches.exists %}
+<div class="mt-8">
+  <h2 class="text-xl font-bold">Signalements rattachés à celui-ci</h2>
+  <ul class="list-disc list-inside mt-2 space-y-1">
+    {% for rattache in signalement.rattaches.all %}
+      <li>{{ rattache }} ({{ rattache.get_etat_display }})</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+
+
+
+
+{% comment %} 
+{% if signalement.regroupe_avec %}
+  <!-- Cas 1 : Ce signalement est un doublon rattaché à un signalement principal -->
+  <div class="mt-6">
+    <h2 class="text-xl font-bold">Groupe de signalements</h2>
+    <p class="mt-2">
+      <strong>Signalement principal :</strong>
+      <a href="{% url 'signalement:gestion:detail' signalement.regroupe_avec.pk %}" class="text-blue-600 hover:underline">
+        {{ signalement.regroupe_avec }} ({{ signalement.regroupe_avec.get_etat_display }})
+      </a>
+    </p>
+
+    {% if signalement.regroupe_avec.rattaches.count > 1 %}
+      <p class="font-semibold mt-3">Autres signalements dans ce groupe :</p>
+      <ul class="list-disc list-inside mt-1 space-y-1">
+        {% for frere in signalement.regroupe_avec.rattaches.all %}
+          {% if frere.pk != signalement.pk %}
+            <li>
+              <a href="{% url 'signalement:gestion:detail' frere.pk %}" class="text-blue-600 hover:underline">
+                {{ frere }} ({{ frere.get_etat_display }})
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+{% elif signalement.rattaches.exists %}
+  <!-- Cas 2 : Ce signalement est le principal et possède des doublons rattachés -->
+  <div class="mt-6">
+    <h2 class="text-xl font-bold">Signalements rattachés à celui-ci</h2>
+    <ul class="list-disc list-inside mt-2 space-y-1">
+      {% for rattache in signalement.rattaches.all %}
+        <li>
+          <a href="{% url 'signalement:gestion:detail' rattache.pk %}" class="text-blue-600 hover:underline">
+            {{ rattache }} ({{ rattache.get_etat_display }})
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endcomment %}
+
+
+
