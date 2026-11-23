@@ -8,7 +8,10 @@ from signalement.models import Categorie, Lieu, Signalement
 
 
 class Command(BaseCommand):
-    help = 'Charge les 4 fichiers CSV de donnees/signalements via l\'ORM Django.'
+    """
+        Charge les 4 fichiers CSV de donnees/signalements via l'ORM Django.
+    """
+    help = "Charge les 4 fichiers CSV de donnees/signalements via l'ORM Django."
 
     def handle(self, *args, **options):
         # Configuration : associer chaque fichier CSV directement à sa classe Modèle
@@ -65,10 +68,14 @@ class Command(BaseCommand):
 
                         # Nettoyage des clés (strip) et conversion des chaînes vides en None
                         donnees_propres = {
-                            cle.strip(): (val if val != '' else None)
+                            cle.strip(): (val) #if val != '' else None)
                             for cle, val in ligne.items()
                             if cle is not None
                         }
+
+                        # Renomme 'objet_id' en 'lieu_id' pour correspondre aux modèles Signalement et Lieu
+                        if 'objet_id' in donnees_propres:
+                            donnees_propres['lieu_id'] = donnees_propres.pop('objet_id') or None
 
                         # Instanciation de l'objet ORM (sans sauvegarde immédiate en base)
                         instances.append(modele(**donnees_propres))
