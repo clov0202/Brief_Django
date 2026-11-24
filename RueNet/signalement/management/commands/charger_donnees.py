@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
                         # Nettoyage des clés (strip) et conversion des chaînes vides en None
                         donnees_propres = {
-                            cle.strip(): (val) #if val != '' else None)
+                            cle.strip(): (val) #if val != '' else None) #données à rentrer vide dans db au lieu de None
                             for cle, val in ligne.items()
                             if cle is not None
                         }

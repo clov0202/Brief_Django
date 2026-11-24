@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.db.models import Q
@@ -64,9 +65,10 @@ class DetailSignalementVue(UpdateView):
     form_class = FormulaireGestionSignalement
     template_name = "gestion/detail.html"
     context_object_name = "signalement"
-    success_url = reverse_lazy("signalement:gestion:liste")
+    success_url = reverse_lazy("signalement:gestion_liste")
 
     def form_valid(self, form):
         # Met à jour la date de modification manuellement (puisque auto_now n'est pas utilisé)
         form.instance.date_modification = timezone.now()
+        messages.success(self.request, "Le signalement a bien été mis à jour.")
         return super().form_valid(form)

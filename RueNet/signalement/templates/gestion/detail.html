@@ -2,7 +2,7 @@
 {% block title %}Détail Signalement{% endblock %}
 
 {% block content %}
-<a href="{% url 'signalement:gestion:liste' %}" class="text-blue-600">← Retour à la liste des signalements</a>
+<a href="{% url 'signalement:gestion_liste' %}" class="text-blue-600">← Retour à la liste des signalements</a>
 
 <h1 class="text-2xl font-bold mt-4">{{ signalement }}</h1>
 
@@ -21,7 +21,7 @@
     </div>
     <div>
       <dt class="font-semibold inline">Lieu :</dt>
-      <dd class="inline">{{ signalement.lieu.name }}</dd>
+      <dd class="inline">{{ signalement.lieu.nom }}</dd>
     </div>
     <div>
       <dt class="font-semibold inline">Latitude/Longitude :</dt>
@@ -69,14 +69,13 @@
   <h2 class="text-xl font-bold">Signalements rattachés à celui-ci</h2>
   <ul class="list-disc list-inside mt-2 space-y-1">
     {% for rattache in signalement.rattaches.all %}
-      <li>{{ rattache }} ({{ rattache.get_etat_display }})</li>
+      <li><a href="{% url 'signalement:gestion_detail' rattache.pk %}">{{ rattache }}</li>
     {% endfor %}
   </ul>
 </div>
 {% endif %}
 
 {% endblock %}
-
 
 
 
@@ -126,6 +125,4 @@
   </div>
 {% endif %}
 {% endcomment %}
-
-
 
