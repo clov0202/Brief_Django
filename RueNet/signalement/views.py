@@ -1,7 +1,10 @@
+from django.urls import reverse_lazy
+from django.utils import timezone
 from django.db.models import Q
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 
-from .models import Categorie, Lieu
+from .models import Categorie, Lieu, Signalement
+from .forms import FormulaireGestionSignalement
 
 
 class CatalogueVue(ListView):
@@ -37,3 +40,33 @@ class DetailLieuVue(DetailView):
     model = Lieu
     template_name = "catalogue/detail.html"
     context_object_name = "lieu"
+
+
+
+##--------------------------------------------------
+
+
+
+class ListeSignalementsVue(ListView):
+    model = Signalement
+    template_name = "gestion/liste.html"
+    context_object_name = "signalements"
+
+    def get_queryset(self):
+        pass
+
+    def get_context_data(self, **kwargs):
+        pass
+
+
+class DetailSignalementVue(UpdateView):
+    model = Signalement
+    form_class = FormulaireGestionSignalement
+    template_name = "gestion/detail.html"
+    context_object_name = "signalement"
+    success_url = reverse_lazy("signalement:gestion:liste")
+
+    def form_valid(self, form):
+        # Met à jour la date de modification manuellement (puisque auto_now n'est pas utilisé)
+        form.instance.date_modification = timezone.now()
+        return super().form_valid(form)
