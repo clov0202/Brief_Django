@@ -85,7 +85,7 @@ Brief_Django/
 │   └── templates/comptes/  #   inscription.html, connexion.html
 ├── signalement/            # App « signalement » : cœur métier
 │   ├── models.py           #   Categorie, Lieu, Signalement
-│   ├── views.py            #   CatalogueVue, DetailLieuVue (vues basées sur les classes)
+│   ├── views.py            #   CatalogueVue, DetailLieuVue 
 │   ├── urls.py             #   app_name = "signalement"
 │   ├── admin.py            #   Categorie, Lieu, Signalement enregistrés dans l'admin
 │   ├── migrations/         #   0001_initial
@@ -328,24 +328,3 @@ Règles de l'équipe :
 ```powershell
 python manage.py test
 ```
-
-## Équipe
-
-| Membre | Contribution |
-|---|---|
-| Matisse Guerguet ([@guerguet-matisse](https://github.com/guerguet-matisse)) | App `signalement` (modèles, catalogue, gestion) |
-| _Coéquipier 2_ | App `comptes` (utilisateurs, authentification) |
-| _Coéquipier 3_ | _À compléter_ |
-
-## Pistes d'amélioration
-
-- Carte interactive des lieux et signalements (Leaflet), grâce aux coordonnées GPS déjà stockées
-- Photos jointes aux signalements
-- Historique des changements d'état
-- Notifications par e-mail
-- Tableau de bord statistique (par quartier, catégorie, délai de résolution)
-- API REST (Django REST Framework)
-
-## Licence
-
-Projet pédagogique — usage éducatif.
