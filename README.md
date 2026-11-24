@@ -46,7 +46,8 @@ Un utilisateur parcourt le catalogue des équipements et signale un problème su
 **Signalements (utilisateur)**
 - Inscription (identifiant, prénom, nom, e-mail obligatoire, quartier) avec connexion automatique à la création du compte
 - Connexion / déconnexion ; un utilisateur déjà connecté est redirigé vers le catalogue
-- Barre de navigation commune (prénom de l'utilisateur connecté) et messages de confirmation affichés en haut de page
+- Barre de navigation commune : liens Connexion / Inscription pour un visiteur, prénom et bouton Déconnexion (formulaire POST) pour un utilisateur connecté, lien **Gestion** visible uniquement pour le rôle `gestionnaire` *(page à venir)*
+- Messages de confirmation affichés en haut de page
 - Dépôt d'un signalement depuis la page d'un lieu, avec une description *(à venir)*
 - Suivi de l'état de ses signalements via « Mes demandes » *(à venir)*
 
@@ -59,7 +60,7 @@ Un utilisateur parcourt le catalogue des équipements et signale un problème su
 
 ## Stack technique
 
-- **Python** 3.11+
+- **Python** 3.12+ (requis par Django 6)
 - **Django** 6.x
 - **SQLite** (développement), chemin configurable via `.env`
 - **python-dotenv** pour les variables d'environnement
@@ -88,6 +89,7 @@ Brief_Django/
 │   ├── urls.py             #   app_name = "signalement"
 │   ├── admin.py            #   Categorie, Lieu, Signalement enregistrés dans l'admin
 │   ├── migrations/         #   0001_initial
+│   ├── management/commands/#   charger_donnees.py (import des CSV)
 │   └── templates/catalogue/#   liste.html, detail.html
 ├── templates/              # base.html (gabarit commun : barre de navigation, messages)
 ├── donnees/
@@ -120,10 +122,12 @@ Modèle utilisateur personnalisé, qui hérite de `AbstractUser` (identifiant, m
 
 | Champ | Type | Description |
 |---|---|---|
-| `role` | `CharField(20)` | `utilisateur` (**Habitant**, par défaut) ou `gestionnaire` (**Agent de la ville**) |
+| `role` | `CharField(20)` | `utilisateur` (affiché « Utilisateur », par défaut) ou `gestionnaire` (affiché « Gestionnaire ») |
 | `quartier` | `CharField(100)` | Quartier de résidence (facultatif) |
 
-Le rôle distingue les habitants, qui déposent des signalements, des agents de la ville, qui les traitent dans la partie gestion.
+Le rôle distingue les utilisateurs, qui déposent des signalements, des gestionnaires (agents de la ville), qui les traitent dans la partie gestion.
+
+Le modèle expose aussi deux alias de lecture/écriture : `prenom` (→ `first_name`) et `nom` (→ `last_name`).
 
 ### `Categorie`
 
@@ -181,7 +185,7 @@ Un rejet doit s'accompagner d'un `motif_rejet`.
 
 ### Prérequis
 
-- Python 3.11 ou plus récent
+- Python 3.12 ou plus récent (requis par Django 6)
 - Git
 
 ### 1. Cloner le dépôt
@@ -246,7 +250,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-> Un super-utilisateur est créé avec le rôle `utilisateur` (Habitant) par défaut. Pour qu'il ait accès à la gestion, ouvre-le dans l'admin (`/admin/`) et passe son **rôle** à *Agent de la ville*. Les comptes gestionnaires se créent aussi depuis l'admin, section « Informations RueNet ».
+> Un super-utilisateur est créé avec le rôle `utilisateur` par défaut. Pour qu'il ait accès à la gestion, ouvre-le dans l'admin (`/admin/`) et passe son **rôle** à *Gestionnaire*. Les comptes gestionnaires se créent aussi depuis l'admin, section « Informations RueNet ».
 
 ## Lancer le projet
 
@@ -268,24 +272,32 @@ python manage.py runserver
 | Administration | http://127.0.0.1:8000/admin/ | — | ✅ disponible |
 
 > Les URLs de `comptes` sont préfixées par `/comptes/` ; celles de `signalement` sont à la racine du site (`path("", include("signalement.urls"))`). Les routes sont nommées avec les namespaces `comptes` et `signalement`.
->
-> Les liens vers l'inscription, la connexion et la déconnexion ne sont pas encore affichés dans la barre de navigation de `base.html` : on y accède pour l'instant en tapant l'URL.
+
 
 ## Import des données
 
-Les jeux de données du thème sont des fichiers **CSV** dans `donnees/signalements/`. Les dates de création et de modification des signalements y sont conservées telles quelles (d'où l'absence d'`auto_now` sur le modèle).
-
-Ordre d'import recommandé, à cause des clés étrangères :
-
-1. `Categorie`
-2. `Lieu`
-3. `Signalement`
+Les jeux de données du thème sont quatre fichiers **CSV** placés dans `donnees/signalements/`. Ils sont chargés par la commande de gestion `charger_donnees` (`signalement/management/commands/charger_donnees.py`).
 
 ```powershell
-python manage.py <commande_d_import>
+python manage.py charger_donnees
 ```
 
-> Remplace `<commande_d_import>` par le nom de ta commande de management ou de ton script d'import.
+| Fichier CSV | Modèle | Ordre |
+|---|---|---|
+| `utilisateurs.csv` | `Utilisateur` | 1 |
+| `categories.csv` | `Categorie` | 2 |
+| `objets.csv` | `Lieu` | 3 |
+| `actions.csv` | `Signalement` | 4 |
+
+L'ordre respecte les clés étrangères (les tables parentes d'abord). Tout se passe dans une transaction : si une ligne est invalide, rien n'est inséré.
+
+**À savoir**
+- La commande **vide d'abord** les quatre tables, puis recharge les CSV : elle peut donc être relancée sans doublons. Les **super-utilisateurs** (comptes admin) sont conservés.
+- Les en-têtes CSV doivent porter les **noms des champs du modèle**. Pour les clés étrangères, utilise le suffixe `_id` (`categorie_id`, `utilisateur_id`, `lieu_id`, `regroupe_avec_id`).
+- Les colonnes `id` des CSV sont conservées, ce qui permet aux fichiers de se référencer entre eux. Évite qu'un `id` d'`utilisateurs.csv` soit celui d'un super-utilisateur déjà présent.
+- Les mots de passe en clair des CSV sont **hachés** à l'import ; ceux déjà hachés sont laissés tels quels.
+- Une cellule vide devient `NULL` pour un champ nullable (`regroupe_avec_id`) et une chaîne vide pour un champ texte (`motif_rejet`).
+- Les dates sans fuseau sont interprétées dans le fuseau du projet (Europe/Paris) et conservées telles quelles (pas d'`auto_now`).
 
 ## Organisation du travail (Git)
 
@@ -316,6 +328,23 @@ Règles de l'équipe :
 ```powershell
 python manage.py test
 ```
+
+## Équipe
+
+| Membre | Contribution |
+|---|---|
+| Matisse Guerguet ([@guerguet-matisse](https://github.com/guerguet-matisse)) | App `signalement` (modèles, catalogue, gestion) |
+| _Coéquipier 2_ | App `comptes` (utilisateurs, authentification) |
+| _Coéquipier 3_ | _À compléter_ |
+
+## Pistes d'amélioration
+
+- Carte interactive des lieux et signalements (Leaflet), grâce aux coordonnées GPS déjà stockées
+- Photos jointes aux signalements
+- Historique des changements d'état
+- Notifications par e-mail
+- Tableau de bord statistique (par quartier, catégorie, délai de résolution)
+- API REST (Django REST Framework)
 
 ## Licence
 
