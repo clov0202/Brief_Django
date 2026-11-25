@@ -18,8 +18,13 @@
       <div>
         <label for="{{ champ.id_for_label }}" class="block font-medium mb-1">
           {{ champ.label }}
+          {% if champ.field.required %}
+            <span class="text-red-600 font-bold">*</span>
+          {% endif %}
         </label>
         {{ champ }}
+
+      </label>
         {% if champ.help_text %}
           <p class="text-xs text-gray-500 mt-1">{{ champ.help_text }}</p>
         {% endif %}
