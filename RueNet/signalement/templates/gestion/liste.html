@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Gestion{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Liste des Signalements</h1>
+
+<form method="get" class="flex flex-wrap gap-3 mb-6">
+  <input type="text" name="mot_cle" value="{{ mot_cle }}" placeholder="Nom, adresse ou quartier…"
+         class="border rounded px-3 py-2 flex-1 min-w-[200px]">
+
+
+
+  <select name="categorie" class="border rounded px-3 py-2">
+    <option value="">Catégories</option>
+    {% for categ in categories %}
+      <option value="{{ categ.id }}" {% if categorie_choisie == categ.id|stringformat:"s" %}selected{% endif %}>
+        {{ categ.nom }}
+      </option>
+    {% endfor %}
+  </select>
+    <select name="categorie" class="border rounded px-3 py-2">
+    <option value="">États</option>
+    {% for etat in signalement.etats %}
+      <option value="{{ etat }}" {% if etat_choisi == etat|stringformat:"s" %}selected{% endif %}>
+        {{ etat }}
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Rechercher</button>
+  <a href="{% url 'signalement:gestion_liste' %}" class="px-4 py-2 text-gray-600">Réinitialiser</a>
+</form>
+
+{% if signalements %}
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {% for signalement in signalements %}
+      <a href="{% url 'signalement:gestion_detail' signalement.pk %}"
+         class="block border rounded p-4 hover:shadow bg-white">
+        <h2 class="font-semibold">Signalement n°{{ signalement.pk }} <span class="float-right inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border {{ signalement.couleur_badge }}">{{ signalement.get_etat_display }}</span></h2>
+        <p class="text-sm text-gray-600">[{{ signalement.lieu.categorie.nom|title }}] {{ signalement.lieu.quartier }}</p>
+        <p class="text-sm">{{ signalement.lieu.adresse }}</p>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-gray-600">Aucun lieu ne correspond à votre recherche.</p>
+{% endif %}
+{% endblock %}
+
+
+<style type="text/css">
+
+
+</style>

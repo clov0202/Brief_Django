@@ -54,10 +54,28 @@ class ListeSignalementsVue(ListView):
     context_object_name = "signalements"
 
     def get_queryset(self):
-        pass
+        signalements = Signalement.objects
+        mot_cle = self.request.GET.get("mot_cle", "").strip()
+        etat = self.request.GET.get("etat", "")
+        categorie = self.request.GET.get("categorie", "")
+
+
+        if mot_cle:
+            # Recherche par mot-clé sur le nom, l'adresse et le quartier
+            signalements = signalements.filter(
+                Q(nom__icontains=mot_cle)
+                | Q(adresse__icontains=mot_cle)
+                | Q(quartier__icontains=mot_cle)
+            )
+
+        return signalements
 
     def get_context_data(self, **kwargs):
-        pass
+        contexte = super().get_context_data(**kwargs)
+        contexte["signalements"] = Signalement.objects.all()
+        contexte["mot_cle"] = self.request.GET.get("mot_cle", "")
+        contexte["etat_choisie"] = self.request.GET.get("etat", "")
+        return contexte
 
 
 class DetailSignalementVue(UpdateView):
