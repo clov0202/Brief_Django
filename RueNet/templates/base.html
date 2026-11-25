@@ -13,7 +13,7 @@
       <a href="/" class="font-bold text-blue-600 text-lg">RueNet</a>
       <a href="{% url 'signalement:liste' %}" class="hover:underline">Catalogue</a>
       {% if user.role == "gestionnaire" %}
-        <a href="/gestion/" class="hover:underline text-red">Gestion</a>
+        <a href="{% url 'signalement:gestion_liste' %}" class="hover:underline text-red-600">Gestion</a>
       {% endif %}
       <div class="ml-auto flex items-center gap-4">
         {% if user.is_authenticated %}

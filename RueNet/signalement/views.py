@@ -1,12 +1,16 @@
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils import timezone
 from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView , UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from django.contrib import messages
 from django.urls import reverse
 
 from .forms import SignalementForm
 from .models import Categorie, Lieu, Signalement
+
+from .forms import FormulaireGestionSignalement
 
 
 class CatalogueVue(ListView):
@@ -74,3 +78,51 @@ class MesSignalementsVue(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Signalement.objects.filter(utilisateur=self.request.user).select_related("lieu")
+
+
+##--------------------------------------------------
+
+
+
+class ListeSignalementsVue(ListView):
+    model = Signalement
+    template_name = "gestion/liste.html"
+    context_object_name = "signalements"
+
+    def get_queryset(self):
+        signalements = Signalement.objects
+        mot_cle = self.request.GET.get("mot_cle", "").strip()
+        etat = self.request.GET.get("etat", "")
+        categorie = self.request.GET.get("categorie", "")
+
+
+        if mot_cle:
+            # Recherche par mot-clé sur le nom, l'adresse et le quartier
+            signalements = signalements.filter(
+                Q(nom__icontains=mot_cle)
+                | Q(adresse__icontains=mot_cle)
+                | Q(quartier__icontains=mot_cle)
+            )
+
+        return signalements
+
+    def get_context_data(self, **kwargs):
+        contexte = super().get_context_data(**kwargs)
+        contexte["signalements"] = Signalement.objects.all()
+        contexte["mot_cle"] = self.request.GET.get("mot_cle", "")
+        contexte["etat_choisie"] = self.request.GET.get("etat", "")
+        return contexte
+
+
+class DetailSignalementVue(UpdateView):
+    model = Signalement
+    form_class = FormulaireGestionSignalement
+    template_name = "gestion/detail.html"
+    context_object_name = "signalement"
+    success_url = reverse_lazy("signalement:gestion_liste")
+
+    def form_valid(self, form):
+        # Met à jour la date de modification manuellement (puisque auto_now n'est pas utilisé)
+        form.instance.date_modification = timezone.now()
+        messages.success(self.request, "Le signalement a bien été mis à jour.")
+        return super().form_valid(form)

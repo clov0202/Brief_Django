@@ -9,7 +9,7 @@ class FormulaireInscription(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = Utilisateur
-        fields = ("username", "first_name", "last_name", "email", "quartier")
+        fields = ("email", "first_name", "last_name", "quartier")  # pas besoin de "username", "email" est l'identifiant
         labels = {
             "username": "Identifiant",
             "first_name": "Prénom",

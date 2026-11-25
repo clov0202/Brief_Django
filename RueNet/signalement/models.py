@@ -56,6 +56,17 @@ class Signalement(models.Model):
         REJETE: [],
     }
 
+    @property
+    def couleur_badge(self):
+        couleurs = {
+            self.NOUVEAU: "bg-blue-100 text-blue-800 border-blue-200",
+            self.PRIS_EN_COMPTE: "bg-orange-100 text-orange-800 border-orange-200",
+            self.EN_COURS: "bg-yellow-100 text-yellow-800 border-yellow-200",
+            self.REJETE: "bg-red-100 text-red-800 border-red-200",
+            self.RESOLU: "bg-green-100 text-green-800 border-green-200",
+        }
+        return couleurs.get(self.etat, "bg-gray-100 text-gray-800 border-gray-200")
+
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="signalements")
     lieu = models.ForeignKey(Lieu, on_delete=models.PROTECT, related_name="signalements")
     etat = models.CharField(max_length=20, choices=ETATS, default=NOUVEAU)
