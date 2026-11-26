@@ -13,6 +13,11 @@
 </dl>
 
 {% if user.is_authenticated %}
-  {# Bouton « Faire un signalement » à ajouter quand /catalogue/<id>/demande/ existera #}
+<div class="mt-6">
+  <a href="{% url 'signalement:demande' lieu.pk %}"
+     class="inline-block bg-white text-red-700 border border-red-300 font-medium px-4 py-2 rounded hover:bg-red-50">
+    Faire un signalement sur ce lieu
+  </a>
+</div>
 {% endif %}
 {% endblock %}
