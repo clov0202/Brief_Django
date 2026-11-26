@@ -101,27 +101,37 @@ class ListeSignalementsVue(ListView):
     context_object_name = "signalements"
 
     def get_queryset(self):
-        signalements = Signalement.objects
+        signalements = super().get_queryset().select_related("lieu", "lieu__categorie")
         mot_cle = self.request.GET.get("mot_cle", "").strip()
         etat = self.request.GET.get("etat", "")
-        categorie = self.request.GET.get("categorie", "")
-
+        categorie_id = self.request.GET.get("categorie", "")
 
         if mot_cle:
             # Recherche par mot-clé sur le nom, l'adresse et le quartier
             signalements = signalements.filter(
-                Q(nom__icontains=mot_cle)
-                | Q(adresse__icontains=mot_cle)
-                | Q(quartier__icontains=mot_cle)
+                Q(lieu__nom__icontains=mot_cle)
+                | Q(lieu__adresse__icontains=mot_cle)
+                | Q(lieu__quartier__icontains=mot_cle)
             )
-
+        if etat:
+            signalements = signalements.filter(
+                etat=etat
+            )
+        if categorie_id:
+            signalements = signalements.filter(
+                lieu__categorie__id=categorie_id
+            )
         return signalements
 
+
     def get_context_data(self, **kwargs):
-        contexte = super().get_context_data(**kwargs)
-        contexte["signalements"] = Signalement.objects.all()
+        contexte = super().get_context_data(**kwargs)   # remplit  contexte["signalements"]  avec le retour du get_queryset au dessus.
+        contexte["categories"] = Categorie.objects.all()   
+        contexte["etats"] = Signalement.ETATS
         contexte["mot_cle"] = self.request.GET.get("mot_cle", "")
-        contexte["etat_choisie"] = self.request.GET.get("etat", "")
+        contexte["etat_choisi"] = self.request.GET.get("etat", "")
+        contexte["categorie_choisie"] = self.request.GET.get("categorie", "")
+        contexte["total_signalements"] = Signalement.objects.count()     
         return contexte
 
 
@@ -134,5 +144,5 @@ class DetailSignalementVue(UpdateView):
 
     def form_valid(self, form):
         form.instance.date_modification = timezone.now()
-        messages.success(self.request, "Le signalement a bien été mis à jour.")
+        messages.success(self.request, f"Le signalement n°{self.object.pk} a bien été mis à jour → {self.object.get_etat_display()}")
         return super().form_valid(form)
