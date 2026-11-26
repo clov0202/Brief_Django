@@ -3,16 +3,33 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView , UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+
+from comptes.models import Utilisateur
 
 from .forms import SignalementForm, NouveauSignalementForm
 from .models import Categorie, Lieu, Signalement
 
 from .forms import FormulaireGestionSignalement
 
+class RoleRequisMixin(LoginRequiredMixin, UserPassesTestMixin):
+    raise_exception = True
+    role_requis = None
+    permission_denied_message = (
+        "Vous devez être connecté avec un compte utilisateur pour accéder à cette page."
+    )
 
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and user.role == self.role_requis
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated and self.raise_exception:
+            raise PermissionDenied(self.get_permission_denied_message())
+        return super().handle_no_permission()
 class CatalogueVue(ListView):
     model = Lieu
     template_name = "catalogue/liste.html"
@@ -47,7 +64,8 @@ class DetailLieuVue(DetailView):
     template_name = "catalogue/detail.html"
     context_object_name = "lieu"
 
-class CreerSignalementVue(LoginRequiredMixin, CreateView):
+class CreerSignalementVue(RoleRequisMixin, CreateView):
+    role_requis = Utilisateur.Role.UTILISATEUR
     model = Signalement
     form_class = SignalementForm
     template_name = "catalogue/demande.html"
@@ -71,7 +89,8 @@ class CreerSignalementVue(LoginRequiredMixin, CreateView):
         return reverse("signalement:detail", kwargs={"pk": self.lieu.pk})
 
 
-class MesSignalementsVue(LoginRequiredMixin, ListView):
+class MesSignalementsVue(RoleRequisMixin, ListView):
+    role_requis = Utilisateur.Role.UTILISATEUR
     model = Signalement
     template_name = "catalogue/mes_demandes.html"
     context_object_name = "signalements"
@@ -79,7 +98,8 @@ class MesSignalementsVue(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Signalement.objects.filter(utilisateur=self.request.user).select_related("lieu")
 
-class NouveauSignalementVue(LoginRequiredMixin, CreateView):
+class NouveauSignalementVue(RoleRequisMixin, CreateView):
+    role_requis = Utilisateur.Role.UTILISATEUR
     model = Signalement
     form_class = NouveauSignalementForm
     template_name = "signalement/nouveau.html"
