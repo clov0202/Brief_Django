@@ -8,6 +8,7 @@ urlpatterns = [
     path("catalogue/<int:pk>/", views.DetailLieuVue.as_view(), name="detail"),
     path("catalogue/<int:pk>/demande/", views.CreerSignalementVue.as_view(), name="demande"),
     path("mes-demandes/", views.MesSignalementsVue.as_view(), name="mes_demandes"),
+    path("signalement/nouveau/", views.NouveauSignalementVue.as_view(), name="nouveau"),
    
 
     path("gestion/", views.ListeSignalementsVue.as_view(), name="gestion_liste"),

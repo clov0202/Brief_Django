@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
-from .forms import SignalementForm
+from .forms import SignalementForm, NouveauSignalementForm
 from .models import Categorie, Lieu, Signalement
 
 from .forms import FormulaireGestionSignalement
@@ -50,7 +50,7 @@ class DetailLieuVue(DetailView):
 class CreerSignalementVue(LoginRequiredMixin, CreateView):
     model = Signalement
     form_class = SignalementForm
-    template_name = "signalement/demande.html"
+    template_name = "catalogue/demande.html"
 
     def dispatch(self, request, *args, **kwargs):
         self.lieu = get_object_or_404(Lieu, pk=kwargs["pk"])
@@ -73,11 +73,22 @@ class CreerSignalementVue(LoginRequiredMixin, CreateView):
 
 class MesSignalementsVue(LoginRequiredMixin, ListView):
     model = Signalement
-    template_name = "signalement/mes_demandes.html"
+    template_name = "catalogue/mes_demandes.html"
     context_object_name = "signalements"
 
     def get_queryset(self):
         return Signalement.objects.filter(utilisateur=self.request.user).select_related("lieu")
+
+class NouveauSignalementVue(LoginRequiredMixin, CreateView):
+    model = Signalement
+    form_class = NouveauSignalementForm
+    template_name = "signalement/nouveau.html"
+    success_url = reverse_lazy("signalement:mes_demandes")
+
+    def form_valid(self, form):
+        form.instance.utilisateur = self.request.user
+        messages.success(self.request, "Votre signalement a bien été enregistré.")
+        return super().form_valid(form)
 
 
 ##--------------------------------------------------
@@ -122,7 +133,6 @@ class DetailSignalementVue(UpdateView):
     success_url = reverse_lazy("signalement:gestion_liste")
 
     def form_valid(self, form):
-        # Met à jour la date de modification manuellement (puisque auto_now n'est pas utilisé)
         form.instance.date_modification = timezone.now()
         messages.success(self.request, "Le signalement a bien été mis à jour.")
         return super().form_valid(form)

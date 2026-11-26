@@ -1,24 +1,7 @@
 from django import forms
 
-from .models import Signalement
+from .models import Signalement, Lieu
 
-
-class SignalementForm(forms.ModelForm):
-    class Meta:
-        model = Signalement
-        fields = ["description"]
-        labels = {
-            "description": "Description du problème",
-        }
-        widgets = {
-            "description": forms.Textarea(
-                attrs={
-                    "rows": 4,
-                    "placeholder": "Décrivez l'anomalie constatée sur ce lieu...",
-                    "class": "w-full border rounded px-3 py-2",
-                }
-            )
-        }
 class FormulaireGestionSignalement(forms.ModelForm):
     class Meta:
         model = Signalement
@@ -47,3 +30,48 @@ class FormulaireGestionSignalement(forms.ModelForm):
         if etat == Signalement.REJETE and not motif:
             self.add_error("motif_rejet", "Veuillez indiquer un motif de rejet.")
         return cleaned_data
+
+class SignalementForm(forms.ModelForm):
+    class Meta:
+        model = Signalement
+        fields = ["description"]
+        labels = {
+            "description": "Description du problème",
+        }
+        widgets = {
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Décrivez l'anomalie constatée sur ce lieu...",
+                    "class": "w-full border rounded px-3 py-2",
+                }
+            )
+        }
+
+
+class NouveauSignalementForm(forms.ModelForm):
+    class Meta:
+        model = Signalement
+        fields = ["lieu", "description"]
+        labels = {
+            "lieu": "Lieu concerné",
+            "description": "Description du problème",
+        }
+        widgets = {
+            "lieu": forms.Select(
+                attrs={
+                    "class": "w-full border rounded px-3 py-2",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Décrivez l'anomalie constatée sur ce lieu...",
+                    "class": "w-full border rounded px-3 py-2",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["lieu"].queryset = Lieu.objects.all()
