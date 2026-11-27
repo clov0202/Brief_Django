@@ -16,8 +16,11 @@ class Utilisateur(AbstractUser):
     USERNAME_FIELD = 'email'  # Definit l'email comme champs de login unique
     REQUIRED_FIELDS = []      # Retire l'email comme étant un -autre- champs obligatoire
 
-
     # Champs d'alias français pour nom et prénom de Abstractuser
+    ALIAS_CHAMPS = {
+        "prenom": "first_name",
+        "nom": "last_name",
+    }
     @property
     def prenom(self):
         return self.first_name

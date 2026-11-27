@@ -6,5 +6,12 @@ app_name = "signalement"
 urlpatterns = [
     path("catalogue/", views.CatalogueVue.as_view(), name="liste"),
     path("catalogue/<int:pk>/", views.DetailLieuVue.as_view(), name="detail"),
-    # À venir : catalogue/<id>/demande/, mes-demandes/, gestion/
+    path("catalogue/<int:pk>/demande/", views.CreerSignalementVue.as_view(), name="demande"),
+    path("mes-demandes/", views.MesSignalementsVue.as_view(), name="mes_demandes"),
+    path("signalement/nouveau/", views.NouveauSignalementVue.as_view(), name="nouveau"),
+   
+
+    path("gestion/", views.ListeSignalementsVue.as_view(), name="gestion_liste"),
+    path("gestion/<int:pk>/", views.DetailSignalementVue.as_view(), name="gestion_detail"),
+
 ]

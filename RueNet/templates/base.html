@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,26 +7,33 @@
   <title>{% block title %}RueNet{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
-
+<body 
+  class="min-h-screen bg-fixed bg-cover bg-bottom bg-no-repeat relative z-0 before:content-[''] before:fixed before:inset-0 before:-z-10 
+  {% if request.path != '/' and request.resolver_match.url_name != 'accueil' %}before:bg-white/90{% endif %}"
+  style="background-image: url('{% static 'images/image_body_bg.jpeg' %}');"
+>
   <nav class="bg-white border-b">
     <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-4">
       <a href="/" class="font-bold text-blue-600 text-lg">RueNet</a>
       <a href="{% url 'signalement:liste' %}" class="hover:underline">Catalogue</a>
-      {% if user.role == "gestionnaire" %}
-        <a href="/gestion/" class="hover:underline text-red">Gestion</a>
-      {% endif %}
+      <a href="{% url 'signalement:nouveau' %}" class="hover:underline">Faire un signalement</a>
+
       <div class="ml-auto flex items-center gap-4">
-        {% if user.is_authenticated %}
-          <span class="text-gray-600">{{ user.first_name|default:user.username }}</span>
-          {# <a href="/mes-demandes/" class="hover:underline">Mes signalements</a> #}
-          <form action="{% url 'comptes:deconnexion' %}" method="post">{% csrf_token %}
-            <button type="submit">Déconnexion</button>
-          </form>
-        {% else %}
-          <a href="{% url 'comptes:connexion' %}" class="hover:underline">Connexion</a>
-          <a href="{% url 'comptes:inscription' %}" class="bg-blue-600 text-white px-3 py-1 rounded">Inscription</a>
+      {% if user.is_authenticated %}
+        {% if user.role == "utilisateur" %}
+          <a href="{% url 'signalement:mes_demandes' %}" class="hover:underline">Mes demandes</a>
         {% endif %}
+        {% if user.role == "gestionnaire" %}
+          <a href="{% url 'signalement:gestion_liste' %}" class="hover:underline text-red-600">Gestion</a>
+        {% endif %}
+        <span class="text-gray-600 cursor-help" title="{{ user.role|capfirst }}">{{ user.email }}</span>
+        <form action="{% url 'comptes:deconnexion' %}" method="post">{% csrf_token %}
+          <button type="submit">Déconnexion</button>
+        </form>
+      {% else %}
+        <a href="{% url 'comptes:connexion' %}" class="hover:underline">Connexion</a>
+        <a href="{% url 'comptes:inscription' %}" class="bg-blue-600 text-white px-3 py-1 rounded">Inscription</a>
+      {% endif %}
       </div>
     </div>
   </nav>
@@ -40,8 +48,9 @@
         {% endfor %}
       </div>
     {% endif %}
-
+  
     {% block content %}{% endblock %}
+
   </main>
 
 </body>

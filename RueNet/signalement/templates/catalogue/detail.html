@@ -12,7 +12,10 @@
   <div><dt class="font-semibold inline">Coordonnées :</dt> <dd class="inline">{{ lieu.latitude }}, {{ lieu.longitude }}</dd></div>
 </dl>
 
-{% if user.is_authenticated %}
-  {# Bouton « Faire un signalement » à ajouter quand /catalogue/<id>/demande/ existera #}
-{% endif %}
+<div class="mt-6">
+  <a href="{% url 'signalement:demande' lieu.pk %}"
+     class="inline-block bg-white border border-red-200 text-red-700 font-medium px-6 py-3 rounded-lg shadow-sm hover:bg-red-50 hover:border-red-300">
+    Faire un signalement sur ce lieu
+  </a>
+</div>
 {% endblock %}
