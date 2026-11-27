@@ -266,9 +266,9 @@ python manage.py runserver
 | Déconnexion | http://127.0.0.1:8000/comptes/deconnexion/ | `comptes:deconnexion` | ✅ disponible |
 | Catalogue des lieux | http://127.0.0.1:8000/catalogue/ (paramètres `?mot_cle=...&categorie=<id>`) | `signalement:liste` | ✅ disponible |
 | Détail d'un lieu | http://127.0.0.1:8000/catalogue/<id>/ | `signalement:detail` | ✅ disponible |
-| Déposer un signalement sur un lieu | `/catalogue/<id>/demande/` | — | 🚧 à venir |
-| Mes signalements | `/mes-demandes/` | — | 🚧 à venir |
-| Gestion des signalements | `/gestion/` | — | 🚧 à venir |
+| Déposer un signalement sur un lieu | `/catalogue/<id>/demande/` | — | ✅ disponible |
+| Mes signalements | `/mes-demandes/` | — | ✅ disponible |
+| Gestion des signalements | `/gestion/` | — | ✅ disponible |
 | Administration | http://127.0.0.1:8000/admin/ | — | ✅ disponible |
 
 > Les URLs de `comptes` sont préfixées par `/comptes/` ; celles de `signalement` sont à la racine du site (`path("", include("signalement.urls"))`). Les routes sont nommées avec les namespaces `comptes` et `signalement`.
