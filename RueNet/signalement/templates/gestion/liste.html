@@ -9,7 +9,7 @@
          class="border rounded px-3 py-2 flex-1 min-w-[200px]">
 
   <select name="categorie" class="border rounded px-3 py-2">
-    <option value="">Catégories</option>
+    <option value="">Toutes catégories</option>
     {% for categ in categories %}
       <option value="{{ categ.id }}" {% if categorie_choisie == categ.id|stringformat:"s" %}selected{% endif %}>
         {{ categ.nom|capfirst }}
@@ -17,7 +17,7 @@
     {% endfor %}
   </select>
     <select name="etat" class="border rounded px-3 py-2">
-    <option value="">États</option>
+    <option value="">Tous états</option>
     {% for etat, libelle in etats %}
       <option value="{{ etat }}" {% if etat_choisi == etat|stringformat:"s" %}selected{% endif %}>
         {{ libelle }}
