@@ -32,11 +32,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')  ##dotenv  # valeur p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'  ##dotenv  # Convertir le string en bool
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1',]
 
 # Application definition
-
 INSTALLED_APPS = [
     'comptes',
     'signalement',
@@ -53,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -129,13 +128,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
-# Indique à Django où chercher le dossier "static" global à la racine du projet
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
+STATICFILES_DIRS = [BASE_DIR / "static"] # Indique à Django où chercher le dossier "static" global à la racine du projet
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Nouveau dossier de destination
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
